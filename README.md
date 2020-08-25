@@ -1,4 +1,6 @@
-# Minit Torch Module 4
+# MiniTorch Module 4
+
+<img src="https://minitorch.github.io/_images/match.png" width="100px">
 
 * Docs: https://minitorch.github.io/
 
@@ -8,4 +10,6 @@ This module requires porting over functions from the past modules.
 
 * Tests:
 
-> python run_tests.py
+```
+python run_tests.py
+```
