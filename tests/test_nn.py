@@ -4,7 +4,7 @@ from .strategies import tensors, assert_close
 import pytest
 
 
-@pytest.mark.task4_2
+@pytest.mark.task4_3
 @given(tensors(shape=(1, 1, 4, 4)))
 def test_avg(t):
     out = minitorch.avgpool2d(t, (2, 2))
@@ -27,7 +27,7 @@ def test_avg(t):
     minitorch.grad_check(lambda t: minitorch.avgpool2d(t, (2, 2)), t)
 
 
-@pytest.mark.task4_2
+@pytest.mark.task4_4
 @given(tensors(shape=(1, 1, 4, 4)))
 def test_max(t):
     out = minitorch.maxpool2d(t, (2, 2))
@@ -58,7 +58,7 @@ def test_drop(t):
     assert q[q._tensor.sample()] == 0.0
 
 
-@pytest.mark.task4_1
+@pytest.mark.task4_4
 @given(tensors(shape=(1, 1, 4, 4)))
 def test_softmax(t):
     q = minitorch.softmax(t, 3)

@@ -22,7 +22,7 @@ RATE = 0.01
 
 
 def RParam(*shape):
-    r = 0.1 * (minitorch.rand(shape) - 0.5)
+    r = 0.1 * (minitorch.rand(shape, backend=BACKEND) - 0.5)
     return minitorch.Parameter(r)
 
 
@@ -100,8 +100,6 @@ vis.images(numpy.array(val_x).reshape((len(val_ys), 1, H, W))[:BATCH], win="val_
 
 
 model = Network()
-for p in model.parameters():
-    p.value.type_(BACKEND)
 
 losses = []
 for epoch in range(250):
@@ -113,12 +111,10 @@ for epoch in range(250):
     for i, j in enumerate(range(0, N, BATCH)):
         if N - j <= BATCH:
             continue
-        y = minitorch.tensor_fromlist(ys[j : j + BATCH])
-        x = minitorch.tensor_fromlist(X[j : j + BATCH])
+        y = minitorch.tensor_fromlist(ys[j : j + BATCH], backend=BACKEND)
+        x = minitorch.tensor_fromlist(X[j : j + BATCH], backend=BACKEND)
         x.requires_grad_(True)
         y.requires_grad_(True)
-        y.type_(BACKEND)
-        x.type_(BACKEND)
 
         # Forward
         out = model.forward(x.view(BATCH, 1, H, W)).view(BATCH, C)

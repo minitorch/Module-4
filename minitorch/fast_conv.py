@@ -3,7 +3,6 @@ from .tensor_data import (
     count,
     index_to_position,
     broadcast_index,
-    shape_broadcast,
     MAX_DIMS,
 )
 from .tensor_functions import Function
@@ -47,7 +46,7 @@ def tensor_conv1d(
 
        `batch, out_channels, width`
 
-    `Reverse` decides if weight is anchored left or right.
+    `reverse` decides if weight is anchored left or right.
 
     Args:
         out (array): storage for `out` tensor.
@@ -66,13 +65,17 @@ def tensor_conv1d(
     batch, in_channels, width = input_shape
     out_channels_, in_channels_, kw = weight_shape
 
-    assert (batch == batch_ and in_channels == in_channels_ and out_channels == out_channels_)
+    assert (
+        batch == batch_
+        and in_channels == in_channels_
+        and out_channels == out_channels_
+    )
     s1 = input_strides
     s2 = weight_strides
 
-
     # TODO: Implement for Task 4.1.
     raise NotImplementedError('Need to implement for Task 4.1')
+
 
 class Conv1dFun(Function):
     @staticmethod
@@ -128,8 +131,8 @@ class Conv1dFun(Function):
         )
         return grad_input, grad_weight
 
-conv1d = Conv1dFun.apply
 
+conv1d = Conv1dFun.apply
 
 
 @njit(parallel=True)

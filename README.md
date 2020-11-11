@@ -11,8 +11,11 @@ This module requires `fast_ops.py`, `scalar.py`, `tensor_functions.py`, `tensor_
 
 Additionally you will need to install and download the MNist library.
 
->>> pip install python-mnist
->>> mnist_get_data.sh
+```
+pip install python-mnist
+mnist_get_data.sh
+```
+
 
 * Tests:
 
