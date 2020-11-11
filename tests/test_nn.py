@@ -70,36 +70,3 @@ def test_softmax(t):
     assert_close(x[0, 0, 0, 0], 1.0)
 
     minitorch.grad_check(lambda a: minitorch.softmax(a, dim=2), t)
-
-
-@pytest.mark.task4_3
-@given(tensors(shape=(1, 1, 6, 6)), tensors(shape=(1, 1, 2, 3)))
-def test_conv(input, weight):
-    minitorch.grad_check(minitorch.Conv2dFun.apply, input, weight)
-
-
-@pytest.mark.task4_3
-@given(tensors(shape=(2, 1, 6, 6)), tensors(shape=(1, 1, 2, 3)))
-def test_conv_batch(input, weight):
-    minitorch.grad_check(minitorch.Conv2dFun.apply, input, weight)
-
-
-@pytest.mark.task4_3
-@given(tensors(shape=(2, 2, 6, 6)), tensors(shape=(3, 2, 2, 3)))
-def test_conv_channel(input, weight):
-    minitorch.grad_check(minitorch.Conv2dFun.apply, input, weight)
-
-
-@pytest.mark.task4_3
-def test_conv2():
-    t = minitorch.tensor_fromlist(
-        [[0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3]]
-    ).view(1, 1, 4, 4)
-    t.requires_grad_(True)
-
-    t2 = minitorch.tensor_fromlist([[1, 1], [1, 1]]).view(1, 1, 2, 2)
-    t2.requires_grad_(True)
-    out = minitorch.Conv2dFun.apply(t, t2)
-    out.sum().backward()
-
-    minitorch.grad_check(minitorch.Conv2dFun.apply, t, t2)

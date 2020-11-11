@@ -6,7 +6,13 @@
 
 * Overview: https://minitorch.github.io/module4.html
 
-This module requires porting over functions from the past modules.
+This module requires `fast_ops.py`, `scalar.py`, `tensor_functions.py`, `tensor_data.py`, `tensor_ops.py`, `operators.py`, `module.py`, and `autodiff.py` from Module 3.
+
+
+Additionally you will need to install and download the MNist library.
+
+>>> pip install python-mnist
+>>> mnist_get_data.sh
 
 * Tests:
 

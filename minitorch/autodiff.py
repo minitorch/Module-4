@@ -16,8 +16,8 @@ def unwrap_tuple(x):
 class Variable:
     """
     Attributes:
-        history (:class:`History`) : The function calls that created this variable
-        derivative (number): The derivative with respect to this variable
+        history (:class:`History`) : the Function calls that created this variable or None if constant
+        derivative (number): the derivative with respect to this variable
         name (string) : an optional name for debugging
     """
 
@@ -50,7 +50,7 @@ class Variable:
 
     ## IGNORE
     def __hash__(self):
-        return hash(self._name)
+        return hash(self.name)
 
     def _add_deriv(self, val):
         assert self.history.is_leaf(), "Only leaf variables can have derivatives."
@@ -116,7 +116,7 @@ class History:
     def is_leaf(self):
         return self.last_fn is None
 
-    def chain_rule(self, d_output):
+    def backprop_step(self, d_output):
         return self.last_fn.chain_rule(self.ctx, self.inputs, d_output)
 
 
@@ -139,7 +139,7 @@ class FunctionBase:
 
     @staticmethod
     def variable(raw, history):
-        pass
+        raise NotImplementedError()
 
     @classmethod
     def apply(cls, *vals):
@@ -169,14 +169,13 @@ class FunctionBase:
         Implement the derivative chain-rule.
 
         Args:
-            cls (:class:`FunctionBase`): The Function
             ctx (:class:`Context`) : The context from running forward
             inputs (list of args) : The args that were passed to :func:`FunctionBase.apply` (e.g. :math:`x, y`)
             d_output (number) : The `d_output` value in the chain rule.
 
         Returns:
-            list of :class:`VariableWithDeriv`: A list of variables with their derivatives
-            for each :class:`Variable` object in input (other inputs should be ignored)
+            list of :class:`VariableWithDeriv`: A list of non-constant variables with their derivatives
+            (see `is_constant` to remove unneeded variables)
 
         """
         raise NotImplementedError('Need to include this file from past assignment.')
@@ -186,15 +185,21 @@ def is_leaf(val):
     return isinstance(val, Variable) and val.history.is_leaf()
 
 
+def is_constant(val):
+    return not isinstance(val, Variable) or val.history is None
+
+
 def backpropagate(final_variable_with_deriv):
     """
     Runs a breadth-first search on the computation graph in order to
     backpropagate derivatives to the leaves.
 
-    See :doc:`backpropagate` for details on the algorithm
+    See :doc:`backpropagate` for details on the algorithm.
 
     Args:
-       final_variable_with_deriv (:class:`VariableWithDeriv`): The final variable
-           and its derivative that we want to propagate backward to the leaves.
+        final_variable_with_deriv (:class:`VariableWithDeriv`): The final variable
+                and its derivative that we want to propagate backward to the leaves.
+
+    No return. Should write to its results to the derivative values of each leaf.
     """
     raise NotImplementedError('Need to include this file from past assignment.')

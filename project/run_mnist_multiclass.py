@@ -48,8 +48,8 @@ class Conv2d(minitorch.Module):
         self.bias = RParam(out_channels, 1, 1)
 
     def forward(self, input):
-        out = minitorch.conv2d(input, self.weights.value) + self.bias.value
-        return out
+        # TODO: Implement for Task 4.5.
+        raise NotImplementedError('Need to implement for Task 4.5')
 
 
 class Network(minitorch.Module):
