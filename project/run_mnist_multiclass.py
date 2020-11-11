@@ -8,7 +8,7 @@ mndata = MNIST("data/")
 images, labels = mndata.load_training()
 
 
-BACKEND = minitorch.make_tensor_functions(minitorch.FastOps)
+BACKEND = minitorch.make_tensor_backend(minitorch.FastOps)
 
 BATCH = 16
 N = 5000
@@ -35,10 +35,9 @@ class Linear(minitorch.Module):
 
     def forward(self, x):
         batch, in_size = x.shape
-        return minitorch.matmul(
-            x.view(batch, 1, in_size),
-            self.weights.value.view(1, in_size, self.out_size),
-        ).view(batch, self.out_size) + self.bias.value.view(1, self.out_size)
+        return (
+            x.view(batch, 1, in_size) @ self.weights.value.view(in_size, self.out_size)
+        ).view(batch, self.out_size) + self.bias.value
 
 
 class Conv2d(minitorch.Module):
@@ -133,8 +132,8 @@ for epoch in range(250):
             model.eval()
             # Evaluate on held-out batch
             correct = 0
-            y = minitorch.tensor_fromlist(val_ys[:BATCH])
-            x = minitorch.tensor_fromlist(val_x[:BATCH])
+            y = minitorch.tensor_fromlist(val_ys[:BATCH], backend=BACKEND)
+            x = minitorch.tensor_fromlist(val_x[:BATCH], backend=BACKEND)
             out = model.forward(x.view(BATCH, 1, H, W)).view(BATCH, C)
             for i in range(BATCH):
                 m = -1000
