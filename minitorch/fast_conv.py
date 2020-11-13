@@ -46,7 +46,7 @@ def tensor_conv1d(
 
        `batch, out_channels, width`
 
-    `reverse` decides if weight is anchored left or right.
+    `reverse` decides if weight is anchored left (False) or right.
 
     Args:
         out (array): storage for `out` tensor.
@@ -164,7 +164,7 @@ def tensor_conv2d(
 
        `batch, out_channels, height, width`
 
-    `Reverse` decides if weight is anchored left or right.
+    `Reverse` decides if weight is anchored top-left (False) or bottom-right.
 
     Args:
         out (array): storage for `out` tensor.
@@ -179,9 +179,16 @@ def tensor_conv2d(
         weight_strides (array): strides for `input` tensor.
         reverse (bool): anchor weight at top-left or bottom-right
     """
-    batch_, out_channels, height_, width_ = out_shape
+    batch_, out_channels, _, _ = out_shape
     batch, in_channels, height, width = input_shape
-    _, _, kh, kw = weight_shape
+    out_channels_, in_channels_, kh, kw = weight_shape
+
+    assert (
+        batch == batch_
+        and in_channels == in_channels_
+        and out_channels == out_channels_
+    )
+
     s1 = input_strides
     s2 = weight_strides
 

@@ -12,7 +12,7 @@ def tile(input, kernel):
         kernel ( pair of ints ): height x width of pooling
 
     Returns:
-        (:class:`Tensor`, int, int) : Tensor of size batch x channel x new_height x new_width x kernel_height x kernel_width as well as the new_height and new_width value.
+        (:class:`Tensor`, int, int) : Tensor of size batch x channel x new_height x new_width x (kernel_height * kernel_width) as well as the new_height and new_width value.
     """
 
     batch, channel, height, width = input.shape
@@ -86,7 +86,7 @@ def softmax(input, dim):
 
     Args:
         input (:class:`Tensor`): input tensor
-        dim (int): dimension to apply argmax
+        dim (int): dimension to apply softmax
 
     Returns:
         :class:`Tensor` : softmax tensor
@@ -107,7 +107,7 @@ def logsoftmax(input, dim):
 
     Args:
         input (:class:`Tensor`): input tensor
-        dim (int): dimension to apply argmax
+        dim (int): dimension to apply log-softmax
 
     Returns:
         :class:`Tensor` : log of softmax tensor
@@ -134,15 +134,15 @@ def maxpool2d(input, kernel):
 
 def dropout(input, rate, ignore=False):
     """
-    Dropout dimensions based on random noise
+    Dropout positions based on random noise.
 
     Args:
         input (:class:`Tensor`): input tensor
-        rate (float): probability of dropping out each dimension
-        ignore (bool): skip
+        rate (float): probability [0, 1) of dropping out each position
+        ignore (bool): skip dropout, i.e. do nothing at all
 
     Returns:
-        :class:`Tensor` : tensor with dropout dimensions
+        :class:`Tensor` : tensor with random positions dropped out
     """
     # TODO: Implement for Task 4.4.
     raise NotImplementedError('Need to implement for Task 4.4')
