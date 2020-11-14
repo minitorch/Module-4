@@ -47,6 +47,7 @@ def tensor_conv1d(
        `batch, out_channels, width`
 
     `reverse` decides if weight is anchored left (False) or right.
+    (See diagrams)
 
     Args:
         out (array): storage for `out` tensor.
@@ -165,6 +166,8 @@ def tensor_conv2d(
        `batch, out_channels, height, width`
 
     `Reverse` decides if weight is anchored top-left (False) or bottom-right.
+    (See diagrams)
+
 
     Args:
         out (array): storage for `out` tensor.

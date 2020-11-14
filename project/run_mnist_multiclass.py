@@ -107,11 +107,11 @@ for epoch in range(250):
     cur_y = 0
 
     model.train()
-    for i, j in enumerate(range(0, N, BATCH)):
-        if N - j <= BATCH:
+    for batch_num, example_num in enumerate(range(0, N, BATCH)):
+        if N - example_num <= BATCH:
             continue
-        y = minitorch.tensor_fromlist(ys[j : j + BATCH], backend=BACKEND)
-        x = minitorch.tensor_fromlist(X[j : j + BATCH], backend=BACKEND)
+        y = minitorch.tensor_fromlist(ys[example_num : example_num + BATCH], backend=BACKEND)
+        x = minitorch.tensor_fromlist(X[example_num : example_num + BATCH], backend=BACKEND)
         x.requires_grad_(True)
         y.requires_grad_(True)
 
@@ -128,24 +128,26 @@ for epoch in range(250):
             if p.value.grad is not None:
                 p.update(p.value - RATE * (p.value.grad / float(BATCH)))
 
-        if i % 50 == 2:
+        if batch_num % 50 == 0:
             model.eval()
-            # Evaluate on held-out batch
-            correct = 0
-            y = minitorch.tensor_fromlist(val_ys[:BATCH], backend=BACKEND)
-            x = minitorch.tensor_fromlist(val_x[:BATCH], backend=BACKEND)
-            out = model.forward(x.view(BATCH, 1, H, W)).view(BATCH, C)
-            for i in range(BATCH):
-                m = -1000
-                ind = -1
-                for j in range(C):
-                    if out[i, j] > m:
-                        ind = j
-                        m = out[i, j]
-                if y[i, ind] == 1.0:
-                    correct += 1
+            # Evaluate on 5 held-out batches
 
-            print("Epoch ", epoch, " loss ", total_loss, "correct", correct)
+            correct = 0
+            for val_example_num in range(0, 5 * BATCH, BATCH):
+                y = minitorch.tensor_fromlist(val_ys[val_example_num : val_example_num + BATCH], backend=BACKEND)
+                x = minitorch.tensor_fromlist(val_x[val_example_num : val_example_num + BATCH], backend=BACKEND)
+                out = model.forward(x.view(BATCH, 1, H, W)).view(BATCH, C)
+                for i in range(BATCH):
+                    m = -1000
+                    ind = -1
+                    for j in range(C):
+                        if out[i, j] > m:
+                            ind = j
+                            m = out[i, j]
+                    if y[i, ind] == 1.0:
+                        correct += 1
+
+            print("Epoch ", epoch, " example ", example_num, " loss ", total_loss[0], " accuracy ", correct / float(5 * BATCH))
 
             # Visualize test batch
             for channel in range(4):
