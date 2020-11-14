@@ -34,10 +34,8 @@ class Linear(minitorch.Module):
         self.out_size = out_size
 
     def forward(self, x):
-        batch, in_size = x.shape
-        return (
-            x.view(batch, 1, in_size) @ self.weights.value.view(in_size, self.out_size)
-        ).view(batch, self.out_size) + self.bias.value
+        # TODO: Implement for Task 4.5.
+        raise NotImplementedError('Need to implement for Task 4.5')
 
 
 class Conv2d(minitorch.Module):
@@ -110,8 +108,12 @@ for epoch in range(250):
     for batch_num, example_num in enumerate(range(0, N, BATCH)):
         if N - example_num <= BATCH:
             continue
-        y = minitorch.tensor_fromlist(ys[example_num : example_num + BATCH], backend=BACKEND)
-        x = minitorch.tensor_fromlist(X[example_num : example_num + BATCH], backend=BACKEND)
+        y = minitorch.tensor_fromlist(
+            ys[example_num : example_num + BATCH], backend=BACKEND
+        )
+        x = minitorch.tensor_fromlist(
+            X[example_num : example_num + BATCH], backend=BACKEND
+        )
         x.requires_grad_(True)
         y.requires_grad_(True)
 
@@ -134,8 +136,12 @@ for epoch in range(250):
 
             correct = 0
             for val_example_num in range(0, 5 * BATCH, BATCH):
-                y = minitorch.tensor_fromlist(val_ys[val_example_num : val_example_num + BATCH], backend=BACKEND)
-                x = minitorch.tensor_fromlist(val_x[val_example_num : val_example_num + BATCH], backend=BACKEND)
+                y = minitorch.tensor_fromlist(
+                    val_ys[val_example_num : val_example_num + BATCH], backend=BACKEND
+                )
+                x = minitorch.tensor_fromlist(
+                    val_x[val_example_num : val_example_num + BATCH], backend=BACKEND
+                )
                 out = model.forward(x.view(BATCH, 1, H, W)).view(BATCH, C)
                 for i in range(BATCH):
                     m = -1000
@@ -147,7 +153,16 @@ for epoch in range(250):
                     if y[i, ind] == 1.0:
                         correct += 1
 
-            print("Epoch ", epoch, " example ", example_num, " loss ", total_loss[0], " accuracy ", correct / float(5 * BATCH))
+            print(
+                "Epoch ",
+                epoch,
+                " example ",
+                example_num,
+                " loss ",
+                total_loss[0],
+                " accuracy ",
+                correct / float(5 * BATCH),
+            )
 
             # Visualize test batch
             for channel in range(4):
