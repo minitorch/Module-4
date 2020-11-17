@@ -57,7 +57,7 @@ class Network(minitorch.Module):
 
     1. Apply a convolution with 4 output channels and a 3x3 kernel followed by a ReLU (save to self.mid)
     2. Apply a convolution with 8 output channels and a 3x3 kernel followed by a ReLU (save to self.out)
-    3. Apply 2D pooling (either Avg or Max) with 2x2 kernel.
+    3. Apply 2D pooling (either Avg or Max) with 4x4 kernel.
     4. Flatten channels, height, and width. (Should be size BATCHx392)
     5. Apply a Linear to size 64 followed by a ReLU and Dropout with rate 25%
     6. Apply a Linear to size C (number of classes).
