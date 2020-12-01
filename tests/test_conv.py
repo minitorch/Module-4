@@ -65,3 +65,36 @@ def test_conv2():
     out.sum().backward()
 
     minitorch.grad_check(minitorch.Conv2dFun.apply, t, t2)
+
+
+@pytest.mark.task4_2
+def test_tensor_conv2():
+    t = minitorch.tensor_fromlist([[1, 2, 3], [4, 5, 6], [7, 8, 9]]).view(1, 1, 3, 3)
+
+    t2 = minitorch.tensor_fromlist([[1, 1], [1, 1]]).view(1, 1, 2, 2)
+
+    forward = minitorch.tensor_fromlist([[12, 16, 9], [24, 28, 15], [15, 17, 9]]).view(
+        1, 1, 3, 3
+    )
+    out = t.zeros(t.shape)
+    minitorch.fast_conv.tensor_conv2d(
+        *out.tuple(),
+        out.size,
+        *t.tuple(),
+        *t2.tuple(),
+        False,
+    )
+    assert (out == forward).sum()[0] == float(out.size)
+
+    out = t.zeros(t.shape)
+    minitorch.fast_conv.tensor_conv2d(
+        *out.tuple(),
+        out.size,
+        *t.tuple(),
+        *t2.tuple(),
+        True,
+    )
+    backward = minitorch.tensor_fromlist([[1, 3, 5], [5, 12, 16], [11, 24, 28]]).view(
+        1, 1, 3, 3
+    )
+    assert (out == backward).sum()[0] == float(out.size)
