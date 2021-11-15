@@ -195,8 +195,8 @@ def tensor_conv2d(
     s1 = input_strides
     s2 = weight_strides
 
-    # TODO: Implement for Task 4.2.
-    raise NotImplementedError('Need to implement for Task 4.2')
+    # TODO: Implement for Task 4.1.
+    raise NotImplementedError('Need to implement for Task 4.1')
 
 
 class Conv2dFun(Function):

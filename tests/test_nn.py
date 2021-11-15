@@ -28,15 +28,8 @@ def test_avg(t):
 
 
 @pytest.mark.task4_4
-@given(tensors(shape=(2, 3, 4)))
-def test_max(t):
-    # TODO: Implement for Task 4.4.
-    raise NotImplementedError('Need to implement for Task 4.4')
-
-
-@pytest.mark.task4_4
 @given(tensors(shape=(1, 1, 4, 4)))
-def test_max_pool(t):
+def test_max(t):
     out = minitorch.maxpool2d(t, (2, 2))
     print(out)
     print(t)
