@@ -16,6 +16,33 @@ def test_conv1d_simple():
     assert out[0, 0, 2] == 2 * 1 + 3 * 2
     assert out[0, 0, 3] == 3 * 1
 
+@pytest.mark.task4_1
+def test_conv1d_simple_backward():
+    input_tensor = minitorch.tensor_fromlist([0, 1, 2, 3]).view(1, 1, 4)
+    weight = minitorch.tensor_fromlist([[1, 2, 3]]).view(1, 1, 3)
+    grad_output = minitorch.tensor_fromlist([0, 1, 2, 3]).view(1, 1, 4)
+    ctx = minitorch.Context()
+    ctx.save_for_backward(input_tensor, weight)
+    grad_input, grad_weight = minitorch.Conv1dFun.backward(ctx, grad_output)
+
+    assert grad_input[0, 0, 0] == weight[0, 0, 0] * grad_output[0, 0, 0]
+    assert (
+        grad_input[0, 0, 1]
+        == weight[0, 0, 0] * grad_output[0, 0, 1]
+        + weight[0, 0, 1] * grad_output[0, 0, 0]
+    )
+    assert (
+        grad_input[0, 0, 2]
+        == weight[0, 0, 0] * grad_output[0, 0, 2]
+        + weight[0, 0, 1] * grad_output[0, 0, 1]
+        + weight[0, 0, 2] * grad_output[0, 0, 0]
+    )
+    assert (
+        grad_input[0, 0, 3]
+        == weight[0, 0, 0] * grad_output[0, 0, 3]
+        + weight[0, 0, 1] * grad_output[0, 0, 2]
+        + weight[0, 0, 2] * grad_output[0, 0, 1]
+    )
 
 @pytest.mark.task4_1
 @given(tensors(shape=(1, 1, 6)), tensors(shape=(1, 1, 4)))
@@ -23,6 +50,17 @@ def test_conv1d(input, weight):
     print(input, weight)
     minitorch.grad_check(minitorch.Conv1dFun.apply, input, weight)
 
+@pytest.mark.task4_1
+def test_conv1d_in_channel():
+    t = minitorch.tensor_fromlist([[0, 1, 2, 3], [0, 1, 2, 3]]).view(1, 2, 4)
+    t.requires_grad_(True)
+    t2 = minitorch.tensor_fromlist([[1, 2, 3], [1, 2, 3]]).view(1, 2, 3)
+    out = minitorch.Conv1dFun.apply(t, t2)
+
+    assert out[0, 0, 0] == (0 * 1 + 1 * 2 + 2 * 3) * 2
+    assert out[0, 0, 1] == (1 * 1 + 2 * 2 + 3 * 3) * 2
+    assert out[0, 0, 2] == (2 * 1 + 3 * 2) * 2
+    assert out[0, 0, 3] == (3 * 1) * 2
 
 @pytest.mark.task4_1
 @given(tensors(shape=(2, 2, 6)), tensors(shape=(3, 2, 2)))
