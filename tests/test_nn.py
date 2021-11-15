@@ -3,27 +3,6 @@ from hypothesis import given
 from .strategies import tensors, assert_close
 import pytest
 
-@pytest.mark.task4_3
-def test_tile():
-    t = minitorch.tensor_fromlist(
-        [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]]
-    ).view(1, 1, 4, 4)
-    tiled, _, _ = minitorch.tile(t, (2, 2))
-    assert tiled[0, 0, 0, 0, 0] == 1
-    assert tiled[0, 0, 0, 0, 1] == 2
-    assert tiled[0, 0, 0, 0, 2] == 5
-    assert tiled[0, 0, 0, 0, 3] == 6
-
-@pytest.mark.task4_3
-def test_tile_2():
-    t = minitorch.tensor_fromlist(
-        [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]]
-    ).view(1, 1, 4, 4)
-    tiled, _, _ = minitorch.tile(t, (1, 2))
-    assert tiled[0, 0, 0, 0, 0] == 1
-    assert tiled[0, 0, 0, 0, 1] == 2
-    assert tiled[0, 0, 0, 1, 0] == 3
-    assert tiled[0, 0, 0, 1, 1] == 4
 
 @pytest.mark.task4_3
 @given(tensors(shape=(1, 1, 4, 4)))
