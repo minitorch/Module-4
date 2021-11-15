@@ -55,7 +55,7 @@ def argmax(input, dim):
         :class:`Tensor` : tensor with 1 on highest cell in dim, 0 otherwise
 
     """
-    out = max_reduce(input, [dim])
+    out = max_reduce(input, dim)
     return out == input
 
 
@@ -142,7 +142,7 @@ def dropout(input, rate, ignore=False):
         ignore (bool): skip dropout, i.e. do nothing at all
 
     Returns:
-        :class:`Tensor` : tensor with random positions dropped out
+        :class:`Tensor` : tensor with randoom positions dropped out
     """
     # TODO: Implement for Task 4.4.
     raise NotImplementedError('Need to implement for Task 4.4')

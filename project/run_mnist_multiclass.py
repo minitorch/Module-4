@@ -1,24 +1,19 @@
 from mnist import MNIST
 import minitorch
-import visdom
-import numpy
 
-vis = visdom.Visdom()
+
 mndata = MNIST("data/")
 images, labels = mndata.load_training()
 
 
 BACKEND = minitorch.make_tensor_backend(minitorch.FastOps)
-
 BATCH = 16
-N = 5000
 
 # Number of classes (10 digits)
 C = 10
 
 # Size of images (height and width)
 H, W = 28, 28
-RATE = 0.01
 
 
 def RParam(*shape):
@@ -36,7 +31,7 @@ class Linear(minitorch.Module):
     def forward(self, x):
         batch, in_size = x.shape
         return (
-            x.view(batch, 1, in_size) @ self.weights.value.view(in_size, self.out_size)
+            x.view(batch, in_size) @ self.weights.value.view(in_size, self.out_size)
         ).view(batch, self.out_size) + self.bias.value
 
 
@@ -73,12 +68,12 @@ class Network(minitorch.Module):
         self.mid = None
         self.out = None
 
-        # TODO: Implement for Task 4.4.
-        raise NotImplementedError('Need to implement for Task 4.4')
+        # TODO: Implement for Task 4.5.
+        raise NotImplementedError('Need to implement for Task 4.5')
 
     def forward(self, x):
-        # TODO: Implement for Task 4.4.
-        raise NotImplementedError('Need to implement for Task 4.4')
+        # TODO: Implement for Task 4.5.
+        raise NotImplementedError('Need to implement for Task 4.5')
 
 
 def make_mnist(start, stop):
@@ -93,75 +88,89 @@ def make_mnist(start, stop):
     return X, ys
 
 
-X, ys = make_mnist(0, N)
-val_x, val_ys = make_mnist(10000, 10500)
-vis.images(numpy.array(val_x).reshape((len(val_ys), 1, H, W))[:BATCH], win="val_images")
+def default_log_fn(epoch, total_loss, correct, losses, model):
+    print("Epoch ", epoch, " loss ", total_loss, "correct", correct)
 
 
-model = Network()
+class ImageTrain:
+    def __init__(self):
+        self.model = Network()
 
-losses = []
-for epoch in range(250):
-    total_loss = 0.0
-    cur = 0
-    cur_y = 0
+    def run_one(self, x):
+        return self.model.forward(minitorch.tensor([x], backend=BACKEND))
 
-    model.train()
-    for batch_num, example_num in enumerate(range(0, N, BATCH)):
-        if N - example_num <= BATCH:
-            continue
-        y = minitorch.tensor_fromlist(ys[example_num : example_num + BATCH], backend=BACKEND)
-        x = minitorch.tensor_fromlist(X[example_num : example_num + BATCH], backend=BACKEND)
-        x.requires_grad_(True)
-        y.requires_grad_(True)
-
-        # Forward
-        out = model.forward(x.view(BATCH, 1, H, W)).view(BATCH, C)
-        prob = (out * y).sum(1)
-        loss = -prob.sum()
-        loss.view(1).backward()
-        total_loss += loss
-        losses.append(total_loss)
-
-        # Update
-        for p in model.parameters():
-            if p.value.grad is not None:
-                p.update(p.value - RATE * (p.value.grad / float(BATCH)))
-
-        if batch_num % 50 == 0:
-            model.eval()
-            # Evaluate on 5 held-out batches
-
-            correct = 0
-            for val_example_num in range(0, 5 * BATCH, BATCH):
-                y = minitorch.tensor_fromlist(val_ys[val_example_num : val_example_num + BATCH], backend=BACKEND)
-                x = minitorch.tensor_fromlist(val_x[val_example_num : val_example_num + BATCH], backend=BACKEND)
-                out = model.forward(x.view(BATCH, 1, H, W)).view(BATCH, C)
-                for i in range(BATCH):
-                    m = -1000
-                    ind = -1
-                    for j in range(C):
-                        if out[i, j] > m:
-                            ind = j
-                            m = out[i, j]
-                    if y[i, ind] == 1.0:
-                        correct += 1
-
-            print("Epoch ", epoch, " example ", example_num, " loss ", total_loss[0], " accuracy ", correct / float(5 * BATCH))
-
-            # Visualize test batch
-            for channel in range(4):
-                vis.images(
-                    -1 * model.mid.to_numpy()[:, channel : channel + 1],
-                    win=f"mid_images_{channel}",
-                    opts=dict(nrow=4, caption=f"mid_images_{channel}"),
-                )
-            for channel in range(8):
-                vis.images(
-                    -1 * model.out.to_numpy()[:, channel : channel + 1],
-                    win=f"out_images_{channel}",
-                    opts=dict(nrow=4, caption=f"out_images_{channel}"),
-                )
-
+    def train(
+        self, data_train, data_val, learning_rate, max_epochs=500, log_fn=default_log_fn
+    ):
+        (X_train, y_train) = data_train
+        (X_val, y_val) = data_val
+        self.model = Network()
+        model = self.model
+        n_training_samples = len(X_train)
+        optim = minitorch.SGD(self.model.parameters(), learning_rate)
+        losses = []
+        for epoch in range(1, max_epochs + 1):
             total_loss = 0.0
+
             model.train()
+            for batch_num, example_num in enumerate(
+                range(0, n_training_samples, BATCH)
+            ):
+
+                if n_training_samples - example_num <= BATCH:
+                    continue
+                y = minitorch.tensor(
+                    y_train[example_num : example_num + BATCH], backend=BACKEND
+                )
+                x = minitorch.tensor(
+                    X_train[example_num : example_num + BATCH], backend=BACKEND
+                )
+                x.requires_grad_(True)
+                y.requires_grad_(True)
+                # Forward
+                out = model.forward(x.view(BATCH, 1, H, W)).view(BATCH, C)
+                prob = (out * y).sum(1)
+                loss = -(prob / y.shape[0]).sum()
+
+                assert loss.backend == BACKEND
+                loss.view(1).backward()
+
+                total_loss += loss[0]
+                losses.append(total_loss)
+
+                # Update
+                optim.step()
+
+                if batch_num % 5 == 0:
+                    model.eval()
+                    # Evaluate on 5 held-out batches
+
+                    correct = 0
+                    for val_example_num in range(0, 1 * BATCH, BATCH):
+                        y = minitorch.tensor(
+                            y_val[val_example_num : val_example_num + BATCH],
+                            backend=BACKEND,
+                        )
+                        x = minitorch.tensor(
+                            X_val[val_example_num : val_example_num + BATCH],
+                            backend=BACKEND,
+                        )
+                        out = model.forward(x.view(BATCH, 1, H, W)).view(BATCH, C)
+                        for i in range(BATCH):
+                            m = -1000
+                            ind = -1
+                            for j in range(C):
+                                if out[i, j] > m:
+                                    ind = j
+                                    m = out[i, j]
+                            if y[i, ind] == 1.0:
+                                correct += 1
+                    log_fn(epoch, total_loss, correct, losses, model)
+
+                    total_loss = 0.0
+                    model.train()
+
+
+if __name__ == "__main__":
+    data_train, data_val = (make_mnist(0, 5000), make_mnist(10000, 10500))
+    ImageTrain().train(data_train, data_val, learning_rate=0.01)

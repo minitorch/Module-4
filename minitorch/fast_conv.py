@@ -1,6 +1,6 @@
 import numpy as np
 from .tensor_data import (
-    count,
+    to_index,
     index_to_position,
     broadcast_index,
     MAX_DIMS,
@@ -12,7 +12,7 @@ from numba import njit, prange
 # This code will JIT compile fast versions your tensor_data functions.
 # If you get an error, read the docs for NUMBA as to what is allowed
 # in these functions.
-count = njit(inline="always")(count)
+to_index = njit(inline="always")(to_index)
 index_to_position = njit(inline="always")(index_to_position)
 broadcast_index = njit(inline="always")(broadcast_index)
 
@@ -136,7 +136,7 @@ class Conv1dFun(Function):
 conv1d = Conv1dFun.apply
 
 
-@njit(parallel=True)
+@njit(parallel=True, fastmath=True)
 def tensor_conv2d(
     out,
     out_shape,
@@ -194,9 +194,12 @@ def tensor_conv2d(
 
     s1 = input_strides
     s2 = weight_strides
+    # inners
+    s10, s11, s12, s13 = s1[0], s1[1], s1[2], s1[3]
+    s20, s21, s22, s23 = s2[0], s2[1], s2[2], s2[3]
 
-    # TODO: Implement for Task 4.1.
-    raise NotImplementedError('Need to implement for Task 4.1')
+    # TODO: Implement for Task 4.2.
+    raise NotImplementedError('Need to implement for Task 4.2')
 
 
 class Conv2dFun(Function):
