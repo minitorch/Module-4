@@ -1,12 +1,11 @@
 from mnist import MNIST
-import minitorch
 
+import minitorch
 
 mndata = MNIST("data/")
 images, labels = mndata.load_training()
 
-
-BACKEND = minitorch.make_tensor_backend(minitorch.FastOps)
+BACKEND = minitorch.TensorBackend(minitorch.FastOps)
 BATCH = 16
 
 # Number of classes (10 digits)
@@ -43,7 +42,7 @@ class Conv2d(minitorch.Module):
 
     def forward(self, input):
         # TODO: Implement for Task 4.5.
-        raise NotImplementedError('Need to implement for Task 4.5')
+        raise NotImplementedError("Need to implement for Task 4.5")
 
 
 class Network(minitorch.Module):
@@ -54,7 +53,7 @@ class Network(minitorch.Module):
 
     1. Apply a convolution with 4 output channels and a 3x3 kernel followed by a ReLU (save to self.mid)
     2. Apply a convolution with 8 output channels and a 3x3 kernel followed by a ReLU (save to self.out)
-    3. Apply 2D pooling (either Avg or Max) with 2x2 kernel.
+    3. Apply 2D pooling (either Avg or Max) with 4x4 kernel.
     4. Flatten channels, height, and width. (Should be size BATCHx392)
     5. Apply a Linear to size 64 followed by a ReLU and Dropout with rate 25%
     6. Apply a Linear to size C (number of classes).
@@ -69,11 +68,11 @@ class Network(minitorch.Module):
         self.out = None
 
         # TODO: Implement for Task 4.5.
-        raise NotImplementedError('Need to implement for Task 4.5')
+        raise NotImplementedError("Need to implement for Task 4.5")
 
     def forward(self, x):
         # TODO: Implement for Task 4.5.
-        raise NotImplementedError('Need to implement for Task 4.5')
+        raise NotImplementedError("Need to implement for Task 4.5")
 
 
 def make_mnist(start, stop):
