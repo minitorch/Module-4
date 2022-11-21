@@ -77,7 +77,8 @@ class Max(Function):
         raise NotImplementedError("Need to implement for Task 4.4")
 
 
-max = Max.apply
+def max(input: Tensor, dim: int) -> Tensor:
+    return Max.apply(input, input._ensure_tensor(dim))
 
 
 def softmax(input: Tensor, dim: int) -> Tensor:
@@ -127,7 +128,7 @@ def maxpool2d(input: Tensor, kernel: Tuple[int, int]) -> Tensor:
         kernel: height x width of pooling
 
     Returns:
-        :class:`Tensor` : pooled tensor
+        Tensor : pooled tensor
     """
     batch, channel, height, width = input.shape
     # TODO: Implement for Task 4.4.

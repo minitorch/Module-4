@@ -2,7 +2,7 @@ from mnist import MNIST
 
 import minitorch
 
-mndata = MNIST("data/")
+mndata = MNIST("project/data/")
 images, labels = mndata.load_training()
 
 BACKEND = minitorch.TensorBackend(minitorch.FastOps)
@@ -87,8 +87,8 @@ def make_mnist(start, stop):
     return X, ys
 
 
-def default_log_fn(epoch, total_loss, correct, losses, model):
-    print("Epoch ", epoch, " loss ", total_loss, "correct", correct)
+def default_log_fn(epoch, total_loss, correct, total, losses, model):
+    print(f"Epoch {epoch} loss {total_loss} valid acc {correct}/{total}")
 
 
 class ImageTrain:
@@ -164,7 +164,7 @@ class ImageTrain:
                                     m = out[i, j]
                             if y[i, ind] == 1.0:
                                 correct += 1
-                    log_fn(epoch, total_loss, correct, losses, model)
+                    log_fn(epoch, total_loss, correct, BATCH, losses, model)
 
                     total_loss = 0.0
                     model.train()

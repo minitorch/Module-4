@@ -60,7 +60,6 @@ def topological_sort(variable: Variable) -> Iterable[Variable]:
     Returns:
         Non-constant Variables in topological order starting from the right.
     """
-    order: List[Variable] = []
     raise NotImplementedError("Need to include this file from past assignment.")
 
 
