@@ -115,7 +115,6 @@ class ImageTrain:
             for batch_num, example_num in enumerate(
                 range(0, n_training_samples, BATCH)
             ):
-
                 if n_training_samples - example_num <= BATCH:
                     continue
                 y = minitorch.tensor(
